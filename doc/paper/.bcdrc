@@ -1,0 +1,17 @@
+# First define $base...
+base=tplp
+base=small
+base=talk
+base=talk
+base=lncs
+
+# source generic aliases etc
+source $C/generic/paper/.bcdrc_generic
+
+# add extra local stuff here (consider generic versions also)
+alias ci='git commit -a ; git push'
+alias upd='cp 1.tex old.1.tex; git pull'
+alias vh='vim ex1.h'
+alias va='vim ex1.adt'
+alias sbi='bibtex spe_adtpp'
+alias slat='pdflatex spe_adtpp.tex'

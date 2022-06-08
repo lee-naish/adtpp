@@ -1,0 +1,33 @@
+\begin{abstract}
+
+\Adtpp\ is an open-source tool that adds support for algebraic data types
+(ADTs) to the C programming language.
+ADTs allow more precise description of program types and more robust handling
+of data structures than is directly supported by C.
+ADT definitions and other
+declarations are put in a file that is preprocessed by \adtpp\ 
+to produce a C header (``.h'') file which can be included in C
+source files.  The generated header file contains C type definitions, macros,
+and inline functions that support type-safe construction, deconstruction,
+and pattern matching of ADT values, while
+avoiding unsafe operations such as casts, and avoiding the risk of errors such as
+dereferencing NULL pointers and accessing inappropriate
+fields of unions.  Values are represented efficiently, using techniques
+from the implementation of declarative languages.  For many simple data
+types, the representation is identical to a direct implementation in C,
+with no loss of efficiency.  For more complex
+types, the \adtpp\ representation is more efficient than common C
+representations, while preserving type safety and convenience.
+As an example, we present a new variation of 234-trees which is
+very compact.
+\Adtpp\ also
+supports parametric polymorphism such as defining a type ``list of $t$'',
+where $t$ can be any ADT, and generic functions such as length.  However,
+compared to typical declarative languages, polymorphic code is somewhat
+more verbose, due to our reliance on the limited type checking available
+in C.
+
+\noindent
+\textbf{Keywords}: Algebraic data types, C language extension, generics,
+polymorphism, safety, static checking, open-source
+\end{abstract}

@@ -1,0 +1,72 @@
+\documentclass{llncs}
+\bibliographystyle{splncs}
+%
+% \usepackage{makeidx}  % allows for indexgeneration
+% \usepackage{subcaption} % allows for subfigures
+% \captionsetup{compatibility=false}
+%
+\begin{document}
+\newcommand{\adtpp}{\texttt{adtpp}}
+\newcommand{\Adtpp}{\texttt{Adtpp}}
+
+\newcommand{\authornote}[2]{
+  {\fbox{\sc #1}:$\langle\langle$\textbf{#2}$\rangle\rangle$}}
+\newcommand{\lee}[1]{\authornote{Lee}{#1}}
+\newcommand{\pds}[1]{\authornote{Sch}{#1}}
+
+%
+% \frontmatter          % for the preliminaries
+%
+\pagestyle{headings}  % switches on printing of running heads
+% \addtocmark{Hamiltonian Mechanics} % additional mark in the TOC
+%
+% \chapter*{Preface}
+% ...
+\mainmatter              % start of the contributions
+%
+\title{Adtpp: lightweight efficient safe polymorphic algebraic data
+types for C}
+%
+\titlerunning{Adtpp}  % abbreviated title (for running head)
+%                                     also used for the TOC unless
+%                                     \toctitle is used
+%
+\author{Lee Naish, Peter Schachte and Aleck MacNally}
+%
+\authorrunning{Naish, Schachte, MacNally}   % abbreviated author list (for running head)
+%
+%%%% list of authors for the TOC (use if author list has to be modified)
+% \tocauthor{Lee Naish}
+%
+\institute{University of Melbourne, Melbourne 3010, Australia\\
+\email{\{lee,schachte\}@unimelb.edu.au}}
+% ,\\
+% \texttt{http://people.eng.unimelb.edu.au/lee/} }
+
+\maketitle              % typeset the title of the contribution
+
+\input{abs}
+\input{1}
+
+\bibliography{all}
+%
+% ---- Bibliography ----
+%
+%\begin{thebibliography}{}
+%
+% \bibitem[1980]{2clar:eke}
+% Clarke, F., Ekeland, I.:
+% Nonlinear oscillations and
+% boundary-value problems for Hamiltonian systems.
+% Arch. Rat. Mech. Anal. {\bf 78} (1982) 315--333
+% \end{thebibliography}
+% \clearpage
+% \addtocmark[2]{Author Index} % additional numbered TOC entry
+% \renewcommand{\indexname}{Author Index}
+% \printindex
+% \clearpage
+% \addtocmark[2]{Subject Index} % additional numbered TOC entry
+% \markboth{Subject Index}{Subject Index}
+% \renewcommand{\indexname}{Subject Index}
+% \input{subjidx.ind}
+\end{document}

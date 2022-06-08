@@ -1,0 +1,7 @@
+INSTALL
+
+1. expand the archive file if needed, go into "src" directory
+2. type "make"
+3. type "make test" (recommended, to see if it works)
+4. type "make install": copies the executable to $(HOME)/bin
+(edit the makefile if you want is somewhere else)

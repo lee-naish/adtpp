@@ -1,0 +1,89 @@
+// Algebraic data type definitions etc for adtpp tool
+
+// Data Declarations
+// ---------------------------------------------------------------
+data decl_t{
+    decl(string_t, ctrlist_t);
+    paramdecl(string_t, ctrlist_t, arglist_t);
+//     paramdecl(string_t, ctrlist_t, paramlist_t);
+}
+data ctr_t{
+    ctr(string_t, arglist_t);
+}
+data arg_t{
+    arg(string_t);
+//     paramarg(string_t);
+    paramdata(string_t, arglist_t);
+    argfunct(arglist_t, arglist_t);
+}
+
+// Data Declarations for Polymorphism
+// ---------------------------------------------------------------
+data param_t{
+    param(string_t);
+}
+// XXX better just have arg_t for RHS; currently there is no way
+// to get a monomorphic name for an instances of a higher
+// order polymorphic type
+data inst_t{
+//     inst(string_t,string_t, paramlist_t);
+//     paraminst(string_t,paramlist_t,string_t, arglist_t);
+    inst(string_t,string_t, arglist_t);
+    paraminst(string_t,arglist_t,string_t, arglist_t);
+}
+
+// Function Data Types
+// ---------------------------------------------------------------
+data fn_t{
+//     fn(string_t, arglist_t, arglist_t, paramlist_t);
+// second argument should be arg_t??
+    fn(string_t, arglist_t, arglist_t, arglist_t);
+}
+
+
+// Common Data Types
+// ---------------------------------------------------------------
+data string_t{
+    type_string(adt_string);
+    func_string(adt_string, adt_string);
+}
+data list_t<C>{
+    cons(C, list_t<C>);
+    nil();
+}
+
+// Instances
+// ---------------------------------------------------------------
+type decllist_t = list_t<decl_t>;
+type ctrlist_t = list_t<ctr_t>;
+type arglist_t = list_t<arg_t>;
+type instlist_t = list_t<inst_t>;
+type paramlist_t = list_t<param_t>;
+type stringlist_t = list_t<string_t>;
+type fnlist_t = list_t<fn_t>;
+
+// Functions
+// ---------------------------------------------------------------
+function<C> list_t<C> reverse_list(list_t<C>);
+function<C> list_t<C> concat_lists(list_t<C>, list_t<C>);
+function<C> int length(list_t<C>);
+function<C> C head(list_t<C>);
+
+// Function Instances
+// ---------------------------------------------------------------
+instance reverse_stringlist = reverse_list<string_t>;
+instance reverse_ctrlist = reverse_list<ctr_t>;
+instance reverse_arglist = reverse_list<arg_t>;
+instance reverse_decllist = reverse_list<decl_t>;
+instance reverse_instlist = reverse_list<inst_t>;
+
+instance length_arglist = length<arg_t>;
+
+instance concat_inst_list = concat_lists<inst_t>;
+instance concat_decl_list = concat_lists<decl_t>;
+instance concat_arg_list = concat_lists<arg_t>;
+
+instance head_arg_t = head<arg_t>;
+
+// ---------------------------------------------------------------
+

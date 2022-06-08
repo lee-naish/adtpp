@@ -1,0 +1,227 @@
+// example.adt
+// Running 'adtpp example.adt' takes this file and produces example.h
+// which has C type definitions, macros etc to be included in your C code.
+
+////////////////////////////////////////////////////////////////////////
+// Defining simple Algebraic Data Types (ADTs) with 'data' declarations
+
+// Defines an ADT 'point' with a single data constructor 'Point' having
+// two arguments, both of type double. It defines a C type 'point'
+// that is similar to a pointer to a C struct with two fields of type
+// double. Here we use upper case for data constructors by convention
+// but this is not necessary. As in the rest of C, identifiers are case
+// sensitive. 'data' is a keyword for parsing by adtpp and white-space
+// is not significant. Because 'double' is not defined as a type in this
+// file, adtpp assumes it is defined elsewhere. adtpp does not support
+// arbitrary C type expressions in this context; if you want a more
+// complex C type such as an array or pointer or struct it is necessary to
+// give the type a single identifier name (using typedef or #define) in
+// your C code. Some more complex type expressions are supported (see
+// discussions of polymorphism and higher order below).
+// Once processed by adtpp, defined data types can be used as C types
+// and data constructors can be used as C functions.  For example we
+// could use the following C code: point origin = Point(0.0, 0.0);
+// There are several ways to extract the arguments of Point (and
+// distinguish between different data constructors for types that have
+// several), discussed in example.c.
+data point {
+    Point(double, double);
+}
+
+// Type 'color' with three data constructors. Like an enumerated type.
+// Note data constructors with no arguments must still have parentheses
+// in data declarations and C code.
+data color {
+    Red();
+    Blue();
+    Green();
+}
+
+// Recursive ADT 'tree'. Like a possibly NULL pointer to a struct
+// containing a long and two pointers to the same type of struct. The
+// way values are (de)constructed avoids the possibility of
+// dereferencing NULL pointers.
+data tree {
+    Empty();
+    Node(long, tree, tree);
+}
+
+// Type 'quad_roots' can be used to represent the roots of a quadratic
+// equation - there are three distinct cases so three data constructors
+// are used.
+data quad_roots {
+    Noroot();
+    Oneroot(double);
+    Tworoot(double, double);
+}
+
+////////////////////////////////////////////////////////////////////////
+// Polymorphic (generic) ADTs: 'data' declarations with type parameters
+
+// Polymorphic pair type: t1 and t2 are type parameters (enclosed in
+// angle brackets after the type name). The type parameters can be
+// instantiated with ADTs, for example pair<point, color> or
+// pair<point, pair<tree, tree>>.
+// Note that every such type used in your C code must be given a name
+// that is a valid C identifier; this is done using 'type' declarations
+// (see below). Type 'pair' itself can be used to write C code that is
+// polymorphic (generic). Polymorphic C functions require 'function' and
+// 'instance' declarations (see below).
+// Note also that adtpp allows generic types to be instantiated using
+// types defined elsewhere. However, such types MUST have the same size
+// as a generic pointer in C (void *) and adtpp DOES NOT CHECK THIS.
+// Type pair<int, int> would be accepted by adtpp but may be a BUG
+// whereas pair<intprt_t, intprt_t> is safe to use (adtpp also defines
+// adt_int to be the same as intptr_t).
+data pair<t1, t2> {
+    Pair(t1, t2);
+}
+
+// list of elements of type t (like a C pointer to a struct containing a
+// t and a next pointer)
+data list<t> {
+    Nil();
+    Cons(t, list<t>);
+}
+
+// simple "sum" type or *discriminated* union (the word "algebraic" in
+// ADT derives from the fact that the types can express a sum of
+// products)
+data either<t1, t2> {
+    Left(t1);
+    Right(t2);
+}
+
+// like a C pointer (possibly NULL) to type t, but without the potential
+// problem of dereferencing NULL pointers
+data maybe<t> {
+    Nothing();
+    Just(t);
+}
+
+////////////////////////////////////////////////////////////////////////
+// Declaring (and naming) compound types with 'type' declarations
+
+// Every instance of a polymorphic ADT used in C code must be given a
+// name. For example, if the C code has a variable of type list<point>
+// we can define 'points' to be that type as follows and use 'points' in
+// the C code to declare the variable.  Similarly for the other types
+// below.
+type points = list<point>;
+type colors = list<color>;
+type ints = list<adt_int>;
+type polygon = pair<color, points>;
+type polygons = list<polygon>;
+
+// 'type' declarations can also define new polymorphic types by adding
+// parameters in the the same way as with 'data' declarations
+type pairs<t1, t2> = list<pair<t1, t2>>;
+
+// type declarations can create multiple names for the same type.
+// For example, polygons1 defined below and polygons are equivalent
+// (both are names for list<pair<color,list<point>>>) and in C code
+// there is no distinction made between them (for the purpose of type
+// checking, structural equivalence is used, not name equivalence)
+type polygons1 = pairs<color, points>;
+
+////////////////////////////////////////////////////////////////////////
+// Declaring polymorphic (generic) functions and their instances
+
+// Polymorphic (generic) functions (those that have polymorphic types as
+// arguments or result) must be declared. adtpp processes such
+// declarations to produce appropriate C function prototypes. For
+// example, the following declares polymorphic function 'length' that
+// takes an argument of type list<t> and returns an int. The code
+// defining the function will be in a C file which #includes a header
+// file containing the function prototype, generated by adtpp from this
+// declaration
+function<t> int length(list<t>);
+
+// Every instance of a polymorphic function used in the C code must be
+// a distinct name using an 'instance' declaration, as follows. C code
+// to define these instances is generated by adtpp (the generated C code
+// for such instances calls the generic function)
+instance num_colors = length<color>;
+instance num_polygons = length<polygon>;
+instance num_points = length<point>;
+
+// Function 'concat' takes two generic lists and concatenates them to
+// return a third generic list; 'join' is an instance for lists of
+// points
+function<t> list<t> concat(list<t>, list<t>);
+instance join = concat<point>;
+
+////////////////////////////////////////////////////////////////////////
+// Polymorphic functions with more than one type variable
+
+// For polymorphic functions that have more than one type variable in
+// their declaration there is one additional adtpp feature that may be 
+// needed.  Consider the function 'swap' declared as follows, which
+// takes a pair and swaps the two elements. It has an instance
+// 'polygon_swp' thak takes a polygon (a pair with the color as the
+// first element) and returns a pair with the color as the second point.
+// This instance of the pair type must be given a name, eg 'polygon_swp'
+// below.  But there are also two distinct types in the generic
+// function, pair<t1, t2> and pair<t2, t1> so we need to distinct names
+// for them in the C code (so the C compiler can detect potential type
+// errors where the wrong generic pair type is used)...
+function<t1, t2> pair<t2, t1> swap(pair<t1, t2>);
+instance swap_polygon = swap<color, points>;
+type polygon_swp = pair<points, color>;
+
+// In adtpp there are a number of generic built-in types that play the
+// role of type variables in more sophisticated type schemes. They are
+// named 'adt_1', 'adt_2', etc. when we define a polymorphic type such as
+// pair<t1,t2>, the type name alone, 'pair', stands for the instance
+// where the arguments are the generic types in numeric order,
+// pair<adt_1,adt_2>.  Essentially, when adtpp processes the polymorphic
+// 'data' declaration it also adds the following type declaration
+// type pair = pair<adt_1, adt_2>
+// Thus the other generic pair type required for 'swap' can be defined
+// as follows, where we use the generic types in the other order
+type pair_swp = pair<adt_2, adt_1>;
+
+////////////////////////////////////////////////////////////////////////
+// Higher order programming (pointers to functions)
+
+// adtpp also supports higher order programming (pointers to functions
+// in C terminoloogy).  Functions can be passed to and returned from
+// polymorphic functions and incorporated into data structures. The
+// syntax adtpp uses to describe a function taking arguments of type t1
+// and t2 and returning a result of type t3 is: t3 func(t1,t2) (in C
+// '(*)' would replace 'func'). Such higher order expressions can be
+// used as type expressions on the right side of data, type, function
+// and instance declarations.
+// For example, in Haskell, we could use the standard prelude function
+// 'zipWith' (that applies a function pair-wise to the elements of two
+// lists to produce a third list) along with 'pair' to take a list of
+// colors and a list of lists of points and return a list of polygons.
+// The code to define zipWith requires three distinct generic list types
+// and these plus the list of lists of points type need to be named and
+// the function and its instance must also be declared:
+type pointss = list<points>;
+type list_2 = list<adt_2>;
+type list_3 = list<adt_3>;
+
+function<t1,t2,t3>
+    list<t3> zipWith(t3 func(t1,t2), list<t1>, list<t2>);
+instance mk_polygons = zipWith<color, points, polygon>;
+
+////////////////////////////////////////////////////////////////////////
+// Other stuff
+
+// wrapper for myCtype, defined elsewhere; this can be used to instantiate
+// polymorphic types, whatever size myCtype is
+data myCtype_ADT {
+	MyC(myCtype);
+};
+
+// Higher order type instance: a list of functions
+type fns = list<int func(int, double)>;
+
+type polygon_swps = list<polygon_swp>;
+instance num_polygon_swps = length<polygon_swp>;
+
+// higher order polymorphic map function
+function<t1, t2> list<t2> map(t2 func(t1), list<t1>);
+instance map_swap_polygon = map<polygon, polygon_swp>;
