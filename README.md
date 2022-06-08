@@ -1,5 +1,7 @@
 Adtpp: algebraic data types for C
 
+See https://lee-naish.github.io/papers/adtpp/
+
 It is lightweight - simply a preprocessor that converts algebraic type
 definitions and declarations into a C header file with macros, typedefs
 etc. Files with C code are not processed at all. The type checking of
