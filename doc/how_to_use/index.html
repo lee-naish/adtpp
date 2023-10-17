@@ -17,7 +17,7 @@
 <p> <code>adtpp</code> provides support for algebraic data types
 in C. Type information is put in a file with a <code>.adt</code>
 extension and <code>adtpp</code> processes this to produce a C header
-file which contains C type definitions, macros etc to be used in C
+file that contains C type definitions, macros etc to be used in C
 code. The following command takes <code>example.adt</code> and produces
 <code>example.h</code>:
 </p>
@@ -57,9 +57,10 @@ data tree {
     Node(long, tree, tree);
 }
 data quad_roots {
-    Noroot();
-    Oneroot(double);
-    Tworoot(double, double);
+    Noroot();                /* no root */
+    Allroot();               // everything is a root
+    Oneroot(double);         // one root
+    Tworoot(double, double); // two roots
 }
 </pre>
 
@@ -67,7 +68,7 @@ data quad_roots {
 data constructor, <code>Point</code> with two arguments, both of
 type <code>double</code>. Identifiers are case sensitive and here
 we use upper case for data constructors by convention - any valid C
-identifier can be used for both  types and data constructors.  'data'
+identifier can be used for both types and data constructors.  'data'
 is a keyword for parsing by <code>adtpp</code> and white-space is not
 significant. The arguments of data constructors in such definitions
 should be valid types. Those not defined in the file (for example,
@@ -76,8 +77,9 @@ compound C type expressions such as pointers, structs, arrays etc is not
 supported; if this is desired <code>typedef</code> or <code>#define</code>
 can be used in C code to give a single identifier name to the type.
 As the other <code>data</code> declarations above show, types can be
-defined recursively, there can be multiple data constructors in a type
-and those that have no arguments must still be followed by parentheses.
+defined recursively, there can be multiple data constructors in a type,
+those that have no arguments must still be followed by parentheses and
+C-style comments are supported.
 </p>
 
 <p> ADT values are created/constructed by using the data constructors like
@@ -155,7 +157,7 @@ be incremented as follows:
 </p>
 
 <pre>
-if_Node(t3, valp, tlp, trp)
+if_Node_ptr(t3, valp, tlp, trp)
     *valp++;
 else()
     printf("No root to increment\n");
@@ -198,7 +200,7 @@ instances of polymorphic types must have different names. Type
 parameters are allowed in <code>data</code> declarations surrounded
 by "angle brackets" to define polymorphic types and their instances
 are declared using <code>type</code> declarations (examples below).
-Type parameters <em>must</em> be instantiated by ADTs or C types which
+Type parameters <em>must</em> be instantiated by ADTs or C types that
 are the size of a pointer (<code>adt_int</code> is a predefined integer
 type of the correct size, the same as <code>intptr_t</code>; using
 <code>list&lt;int&gt;</code> instead of <code>list&lt;adt_int&gt;</code>
@@ -278,7 +280,7 @@ instances with different names allows the C compiler to perform
 appropriate type checking; <code>adtpp</code> generates function
 prototypes and definitions for the instances (which call the polymorphic
 code). For example, the following declarations allow us to use a
-function <code>count_ints</code> which takes an argument of type
+function <code>count_ints</code> that takes an argument of type
 <code>ints</code> and returns an <code>int</code> without duplicating
 the <code>length</code> code or using error-prone and potentially unsafe
 explicit casts.

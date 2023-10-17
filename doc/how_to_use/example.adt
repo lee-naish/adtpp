@@ -47,12 +47,13 @@ data tree {
 }
 
 // Type 'quad_roots' can be used to represent the roots of a quadratic
-// equation - there are three distinct cases so three data constructors
-// are used.
+// equation - there are four distinct cases so four data constructors
+// are used
 data quad_roots {
-    Noroot();
-    Oneroot(double);
-    Tworoot(double, double);
+    Noroot();                // no root
+    Allroot();               // everything is a root
+    Oneroot(double);         // one root
+    Tworoot(double, double); // two roots
 }
 
 ////////////////////////////////////////////////////////////////////////
@@ -208,7 +209,7 @@ function<t1,t2,t3>
 instance mk_polygons = zipWith<color, points, polygon>;
 
 ////////////////////////////////////////////////////////////////////////
-// Other stuff
+/* Other stuff */
 
 // wrapper for myCtype, defined elsewhere; this can be used to instantiate
 // polymorphic types, whatever size myCtype is
